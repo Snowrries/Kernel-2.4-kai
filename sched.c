@@ -332,7 +332,7 @@ send_now_idle:
 static inline void add_to_runqueue(struct task_struct * p)
 {
 	//list_add_tail(&p->run_list, &runqueue_head);
-	__list_add(&p->run_list, &priority_queues[2]->prev, &runningarray[2]);
+	__list_add(&p->run_list, &priority_queues[2]->prev, &priority_queues[2]);
 	//runningarray not yet implemented
 	nr_running++;
 }
