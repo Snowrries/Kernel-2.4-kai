@@ -29,7 +29,7 @@
 #include <linux/completion.h>
 #include <linux/prefetch.h>
 #include <linux/compiler.h>
-
+#include <math.h>
 #include <asm/uaccess.h>
 #include <asm/mmu_context.h>
 
@@ -325,10 +325,15 @@ send_now_idle:
  * a process that is either pre-empted or its time slice
  * has expired, should be moved to the tail of the run 
  * queue for its priority - Bhavesh Davda
+ 37 static inline void __list_add(struct list_head *new,
+ 38                               struct list_head *prev,
+ 39                               struct list_head *next)
  */
 static inline void add_to_runqueue(struct task_struct * p)
 {
-	list_add_tail(&p->run_list, &runqueue_head);
+	//list_add_tail(&p->run_list, &runqueue_head);
+	__list_add(&p->run_list, &runningarray[2]->prev, &runningarray[2]);
+	//runningarray not yet implemented
 	nr_running++;
 }
 
@@ -336,6 +341,7 @@ static inline void move_last_runqueue(struct task_struct * p)
 {
 	list_del(&p->run_list);
 	list_add_tail(&p->run_list, &runqueue_head);
+	//this should be changed
 }
 
 /*
@@ -601,8 +607,8 @@ repeat_schedule:
 	/*
 	 * Default process to select..
 	 */
-	next = idle_task(this_cpu);
-	c = -1000;
+	next = list_entry((&runqueue_head)->next, struct task_struct, run_list);
+/*	c = -1000;
 	list_for_each(tmp, &runqueue_head) {
 		p = list_entry(tmp, struct task_struct, run_list);
 		if (can_schedule(p, this_cpu)) {
@@ -611,9 +617,9 @@ repeat_schedule:
 				c = weight, next = p;
 		}
 	}
-
+*/
 	/* Do we need to re-calculate counters? */
-	if (unlikely(!c)) {
+/*	if (unlikely(!c)) {
 		struct task_struct *p;
 
 		spin_unlock_irq(&runqueue_lock);
@@ -624,7 +630,7 @@ repeat_schedule:
 		spin_lock_irq(&runqueue_lock);
 		goto repeat_schedule;
 	}
-
+*/
 	/*
 	 * from this point on nothing can prevent us from
 	 * switching to the next task, save this fact in
@@ -1168,8 +1174,12 @@ asmlinkage long sys_sched_rr_get_interval(pid_t pid, struct timespec *interval)
 	read_lock(&tasklist_lock);
 	p = find_process_by_pid(pid);
 	if (p)
-		jiffies_to_timespec(p->policy & SCHED_FIFO ? 0 : NICE_TO_TICKS(p->nice),
-				    &t);
+	{
+		double tempo = 10000+ 1800300log10((double)(p->priority));
+		//p->priority yet to be implemented.
+		t->tv_nsec = (long) tempo;
+		t->tv_sec = 0;
+	}
 	read_unlock(&tasklist_lock);
 	if (p)
 		retval = copy_to_user(interval, &t, sizeof(t)) ? -EFAULT : 0;
