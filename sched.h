@@ -280,6 +280,8 @@ struct user_struct {
 extern struct user_struct root_user;
 #define INIT_USER (&root_user)
 
+struct list_head priority_queues[256];
+
 struct task_struct {
 	/*
 	 * offsets of these are hardcoded elsewhere - touch with care
@@ -296,7 +298,7 @@ struct task_struct {
 	unsigned long ptrace;
 
 	int lock_depth;		/* Lock depth */
-
+	int priority;
 /*
  * offset 32 begins here on 32-bit platforms. We keep
  * all fields in a single cacheline that are needed for
@@ -476,7 +478,8 @@ extern struct exec_domain	default_exec_domain;
     sigpending:		0,						\
     addr_limit:		KERNEL_DS,					\
     exec_domain:	&default_exec_domain,				\
-    lock_depth:		-1,						\
+    lock_depth:		-1,					\
+    priority:	2,					\	
     counter:		DEF_COUNTER,					\
     nice:		DEF_NICE,					\
     policy:		SCHED_OTHER,					\
