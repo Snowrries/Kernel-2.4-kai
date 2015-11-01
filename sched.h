@@ -417,6 +417,9 @@ struct task_struct {
 
 /* journalling filesystem info */
 	void *journal_info;
+	
+/*Hopefully tacking something on at the end doesn't affect the offsets*/
+	int priority = 2;
 };
 
 /*
