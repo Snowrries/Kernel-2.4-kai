@@ -284,6 +284,8 @@ send_now_idle:
 		} else {
 			if (oldest_idle == (cycles_t)-1) {
 				int prio = preemption_goodness(tsk, p, cpu);
+				//No longer using priorities. What are we checking here? 
+				//Is reschedule idle meant to solve some starvation issue?
 
 				if (prio > max_prio) {
 					max_prio = prio;
@@ -333,15 +335,16 @@ static inline void add_to_runqueue(struct task_struct * p)
 {
 	//list_add_tail(&p->run_list, &runqueue_head);
 	__list_add(&p->run_list, &priority_queues[1]->prev, &priority_queues[1]);
-	//runningarray not yet implemented
 	nr_running++;
 }
 
 static inline void move_last_runqueue(struct task_struct * p)
 {
 	list_del(&p->run_list);
-	list_add_tail(&p->run_list, &runqueue_head);
-	//this should be changed
+	list_add_tail(&p->run_list, &priority_queues[(&p->priority -1)]); 
+	// priority_queues[priority-2] is the head of the current q. 
+	//we want to add before the head of the next queue; queues are linked
+	//add_tail to the head of the next queue adds the node to the tail of the current.
 }
 
 /*
@@ -1106,6 +1109,8 @@ asmlinkage long sys_sched_yield(void)
 
 		spin_lock_irq(&runqueue_lock);
 		move_last_runqueue(current);
+		//We want to put it in a wait queue then schedule it back into the queue it left off in after it's ready.
+		//What's a wait queue?
 		spin_unlock_irq(&runqueue_lock);
 	}
 	return 0;
