@@ -335,16 +335,19 @@ static inline void add_to_runqueue(struct task_struct * p)
 {
 	//list_add_tail(&p->run_list, &runqueue_head);
 	__list_add(&p->run_list, &priority_queues[1]->prev, &priority_queues[1]);
+	&p->priority == 2;
+	//priority = array index +2
 	nr_running++;
 }
 
 static inline void move_last_runqueue(struct task_struct * p)
 {
 	list_del(&p->run_list);
-	list_add_tail(&p->run_list, &priority_queues[(&p->priority -1)]); 
+	list_add_tail(&p->run_list, &priority_queues[(&p->priority-1)]); 
 	// priority_queues[priority-2] is the head of the current q. 
 	//we want to add before the head of the next queue; queues are linked
 	//add_tail to the head of the next queue adds the node to the tail of the current.
+	//Keeps priority constant.
 }
 
 /*
@@ -367,7 +370,13 @@ static inline int try_to_wake_up(struct task_struct * p, int synchronous)
 	p->state = TASK_RUNNING;
 	if (task_on_runqueue(p))
 		goto out;
-	add_to_runqueue(p);
+	if( &p->priority == 2){
+		add_to_runqueue(p);
+	}
+	else{
+		list_add_tail(&p->run_list, &priority_queues[--(&p->priority)]); 
+		//this puts it at the end of the queue above p's queue. Priority adjusted accordingly.
+	}
 	if (!synchronous || !(p->cpus_allowed & (1UL << smp_processor_id())))
 		reschedule_idle(p);
 	success = 1;
