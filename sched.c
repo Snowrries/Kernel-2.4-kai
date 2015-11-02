@@ -983,8 +983,8 @@ static int setscheduler(pid_t pid, int policy,
 		policy = p->policy;
 	else {
 		retval = -EINVAL;
-		if (policy != SCHED_FIFO && policy != SCHED_RR &&
-				policy != SCHED_OTHER)
+		if (policy != SCHED_FIFO && policy != SCHED_RR)
+		// removed && policy != SCHED_OTHER since we only have two scheduling schema now.
 			goto out_unlock;
 	}
 	
@@ -1114,6 +1114,7 @@ asmlinkage long sys_sched_yield(void)
 		 */
 		if (current->policy == SCHED_OTHER)
 			current->policy |= SCHED_YIELD;
+			//|= is bitwise inclusive OR assignment
 		current->need_resched = 1;
 
 		spin_lock_irq(&runqueue_lock);
@@ -1327,7 +1328,8 @@ void reparent_to_init(void)
 
 	this_task->ptrace = 0;
 	this_task->nice = DEF_NICE;
-	this_task->policy = SCHED_OTHER;
+	this_task->policy = SCHED_FIFO;
+	//Hopefully changing this_task->policy doesn't change much.
 	/* cpus_allowed? */
 	/* rt_priority? */
 	/* signals? */
