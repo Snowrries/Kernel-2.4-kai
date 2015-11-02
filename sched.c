@@ -141,67 +141,6 @@ void scheduling_functions_start_here(void) { }
  *	 +1000: realtime process, select this.
  */
 
-static inline int goodness(struct task_struct * p, int this_cpu, struct mm_struct *this_mm)
-{
-	int weight;
-
-	/*
-	 * select the current process after every other
-	 * runnable process, but before the idle thread.
-	 * Also, dont trigger a counter recalculation.
-	 */
-	weight = -1;
-	if (p->policy & SCHED_YIELD)
-		goto out;
-
-	/*
-	 * Non-RT process - normal case first.
-	 */
-	if (p->policy == SCHED_OTHER) {
-		/*
-		 * Give the process a first-approximation goodness value
-		 * according to the number of clock-ticks it has left.
-		 *
-		 * Don't do any other calculations if the time slice is
-		 * over..
-		 */
-		weight = p->counter;
-		if (!weight)
-			goto out;
-			
-#ifdef CONFIG_SMP
-		/* Give a largish advantage to the same processor...   */
-		/* (this is equivalent to penalizing other processors) */
-		if (p->processor == this_cpu)
-			weight += PROC_CHANGE_PENALTY;
-#endif
-
-		/* .. and a slight advantage to the current MM */
-		if (p->mm == this_mm || !p->mm)
-			weight += 1;
-		weight += 20 - p->nice;
-		goto out;
-	}
-
-	/*
-	 * Realtime process, select the first one on the
-	 * runqueue (taking priorities within processes
-	 * into account).
-	 */
-	weight = 1000 + p->rt_priority;
-out:
-	return weight;
-}
-
-/*
- * the 'goodness value' of replacing a process on a given CPU.
- * positive value means 'replace', zero or negative means 'dont'.
- */
-static inline int preemption_goodness(struct task_struct * prev, struct task_struct * p, int cpu)
-{
-	return goodness(p, cpu, prev->active_mm) - goodness(prev, cpu, prev->active_mm);
-}
-
 /*
  * This is ugly, but reschedule_idle() is very timing-critical.
  * We are called with the runqueue spinlock held and we must
