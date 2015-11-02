@@ -300,7 +300,6 @@ struct task_struct {
 	unsigned long ptrace;
 
 	int lock_depth;		/* Lock depth */
-	int priority;
 /*
  * offset 32 begins here on 32-bit platforms. We keep
  * all fields in a single cacheline that are needed for
@@ -421,7 +420,7 @@ struct task_struct {
 	void *journal_info;
 	
 /*Hopefully tacking something on at the end doesn't affect the offsets*/
-	int priority = 2;
+	int priority;
 };
 
 /*
