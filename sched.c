@@ -342,6 +342,9 @@ static inline int try_to_wake_up(struct task_struct * p, int synchronous)
 		add_to_runqueue(p);
 	}
 	else{
+		if(priority_queues[--(p->priority)] == null){
+			priority_queues[p->priority] = p;
+		}
 		list_add_tail(&p->run_list, &priority_queues[--(p->priority)]); 
 		//this puts it at the end of the queue above p's queue. Priority adjusted accordingly.
 	}
@@ -564,7 +567,32 @@ need_resched_back:
 	if (unlikely(prev->policy == SCHED_RR))
 		if (!prev->counter) {
 			prev->counter = thyme[prev->priority]; // thyme is a static queue of quanta
-			move_last_runqueue(prev);
+			//move_last_runqueue(prev);
+		//Check prev->priority
+			if(!empty[++(prev->priority)]){
+				//shift the prev and nexts such that p is now at the end of the next queue
+				//Make sure to update empty[] and priority_queues[] as necessary.
+				//Note current = prev
+				priority_queues[prev->priority] = &prev->run_list;
+				empty[prev->priority] = 1;
+			}
+			else{
+				(&(prev->runlist)->prev)->next = (&(prev->runlist))->next;
+				(&(prev->runlist)->next)->prev = (&(prev->runlist))->prev;
+				falur = 1;
+				for(int i = prev->priority; i < 255; i++){
+					if(empty[i]){
+						__list_add(&prev->run_list, &priority_queues[i]->prev, &priority_queues[i]);
+						falur = 0;
+						prev->priority = i+2;
+					}
+				}
+				if(!falur){
+					list_add_tail(&prev->run_list, &runqueue_head);
+				}
+				
+			}
+			list_add_tail(&prev->run_list, &priority_queues[--(prev->priority)]); 
 		}
 
 	switch (prev->state) {
