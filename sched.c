@@ -272,21 +272,50 @@ send_now_idle:
  */
 static inline void add_to_runqueue(struct task_struct * p)
 {
+	falur = 1;
 	//list_add_tail(&p->run_list, &runqueue_head);
-	__list_add(&p->run_list, &priority_queues[1]->prev, &priority_queues[1]);
-	&p->priority == 2;
-	//priority = array index +2
+	if(!empty[0]){
+		__list_add(&p->run_list, &runqueue_head, &runqueue_head->next);
+		empty[0] = 1;
+		p->priority = 0;
+	}
+	//Find the next queue that isn't empty in order to link
+	else{
+		for(int i = 1; i < 255; i++){
+			if(empty[i]){
+				__list_add(&p->run_list, &priority_queues[i]->prev, &priority_queues[i]);
+				falur = 0;
+				p->priority = i;
+			}
+		}
+		if(falur){
+			list_add_tail(&p->run_list, &runqueue_head);
+		}
+	}
+//	__list_add(&p->run_list, &priority_queues[1]->prev, &priority_queues[1]);
+
 	nr_running++;
 }
 
 static inline void move_last_runqueue(struct task_struct * p)
 {
+	falur = 1;
 	list_del(&p->run_list);
-	list_add_tail(&p->run_list, &priority_queues[(&p->priority-1)]); 
-	// priority_queues[priority-2] is the head of the current q. 
-	//we want to add before the head of the next queue; queues are linked
+	list_add_tail(&p->run_list, &priority_queues[(p->priority)]); 
+	// priority_queues[priority] is the head of the current q. 
+	//we want to add before the head of the next non empty queue; queues are linked
 	//add_tail to the head of the next queue adds the node to the tail of the current.
 	//Keeps priority constant.
+	for(int i = p->priority; i < 255; i++){
+		if(empty[i]){
+				__list_add(&p->run_list, &priority_queues[i]->prev, &priority_queues[i]);
+				falur = 0;
+				p->priority = i+2;
+			}
+		}
+		if(falur){
+			list_add_tail(&p->run_list, &runqueue_head);
+		}
 }
 
 /*
@@ -309,11 +338,11 @@ static inline int try_to_wake_up(struct task_struct * p, int synchronous)
 	p->state = TASK_RUNNING;
 	if (task_on_runqueue(p))
 		goto out;
-	if( &p->priority == 2){
+	if( p->priority == 0){
 		add_to_runqueue(p);
 	}
 	else{
-		list_add_tail(&p->run_list, &priority_queues[--(&p->priority)]); 
+		list_add_tail(&p->run_list, &priority_queues[--(p->priority)]); 
 		//this puts it at the end of the queue above p's queue. Priority adjusted accordingly.
 	}
 	if (!synchronous || !(p->cpus_allowed & (1UL << smp_processor_id())))
@@ -534,7 +563,7 @@ need_resched_back:
 	/* move an exhausted RR process to be last.. */
 	if (unlikely(prev->policy == SCHED_RR))
 		if (!prev->counter) {
-			prev->counter = NICE_TO_TICKS(prev->nice);
+			prev->counter = thyme[prev->priority]; // thyme is a static queue of quanta
 			move_last_runqueue(prev);
 		}
 
