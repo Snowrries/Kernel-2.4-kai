@@ -284,6 +284,9 @@ struct list_head priority_queues[256];
 /*if queue is empty then that slot in empty[] is 0, otherwise 1 */
 int empty[256];
 
+static long thyme[256] = {};
+//Fill in vals
+
 struct task_struct {
 	/*
 	 * offsets of these are hardcoded elsewhere - touch with care
