@@ -29,7 +29,7 @@
 #include <linux/completion.h>
 #include <linux/prefetch.h>
 #include <linux/compiler.h>
-#include <math.h>
+
 #include <asm/uaccess.h>
 #include <asm/mmu_context.h>
 
@@ -56,19 +56,7 @@ extern void mem_use(void);
  * We want the time-slice to be around 50ms or so, so this
  * calculation depends on the value of HZ.
  */
-#if HZ < 200
-#define TICK_SCALE(x)	((x) >> 2)
-#elif HZ < 400
-#define TICK_SCALE(x)	((x) >> 1)
-#elif HZ < 800
-#define TICK_SCALE(x)	(x)
-#elif HZ < 1600
-#define TICK_SCALE(x)	((x) << 1)
-#else
-#define TICK_SCALE(x)	((x) << 2)
-#endif
 
-#define NICE_TO_TICKS(nice)	(TICK_SCALE(20-(nice))+1)
 static long thyme [256] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,50,51,51,52,52,53,53,54,54,55,55,56,56,57,57,58,58,59,59,60,60,61,61,62,62,63,63,64,64,65,65,66,67,67,68,68,69,69,70,70,71,71,72,72,73,73,74,74,75,75,76,76,76,76,76,77,77,77,77,77,78,78,78,78,78,79,79,79,79,79,80,80,80,80,80,81,81,81,81,81,81,82,82,82,82,82,82,83,83,83,83,83,83,84,84,84,84,84,84,85,85,85,85,85,85,86,86,86,86,86,86,87,87,87,87,87,87,88,88,88,88,88,88,89,89,89,89,89,89,90,90,90,90,90,90,90,91,91,91,91,91,91,91,92,92,92,92,92,92,92,93,93,93,93,93,93,93,94,94,94,94,94,94,94,95,95,95,95,95,95,95,96,96,96,96,96,96,96,97,97,97,97,97,97,97,98,98,98,98,98,98,98,99,99,99,99,99,99,99,100,100,100,100,100,100,100,100};
 //Haha... well, this is a hardcoded array.
 /*
@@ -251,7 +239,7 @@ send_now_idle:
 	struct task_struct *tsk;
 
 	tsk = cpu_curr(this_cpu);
-	if (preemption_goodness(tsk, p, this_cpu) > 0)
+	//if (preemption_goodness(tsk, p, this_cpu) > 0)
 		tsk->need_resched = 1;
 #endif
 }
@@ -586,7 +574,7 @@ need_resched_back:
 					if(empty[i]){
 						__list_add(&prev->run_list, &priority_queues[i]->prev, &priority_queues[i]);
 						falur = 0;
-						prev->priority = i+2;
+						prev->priority = i;
 					}
 				}
 				if(!falur){
@@ -736,7 +724,7 @@ static inline void __wake_up_common (wait_queue_head_t *q, unsigned int mode,
 	CHECK_MAGIC_WQHEAD(q);
 	WQ_CHECK_LIST_HEAD(&q->task_list);
 	
-	list_for_each(tmp,&q->task_list) {
+	list_for_each(tmp,&q->task_list) {//What does this do?
 		unsigned int state;
                 wait_queue_t *curr = list_entry(tmp, wait_queue_t, task_list);
 
