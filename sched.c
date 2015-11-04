@@ -1316,7 +1316,7 @@ void reparent_to_init(void)
 
 	this_task->ptrace = 0;
 	this_task->nice = DEF_NICE;
-	this_task->policy = SCHED_FIFO;
+	this_task->policy = SCHED_RR;
 	//Hopefully changing this_task->policy doesn't change much.
 	/* cpus_allowed? */
 	/* rt_priority? */
