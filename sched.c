@@ -311,7 +311,7 @@ static inline void move_last_runqueue(struct task_struct * p)
 		if(empty[i]){
 				__list_add(&p->run_list, &priority_queues[i]->prev, &priority_queues[i]);
 				falur = 0;
-				p->priority = i+2;
+				p->priority = i;
 				break;
 			}
 		}
