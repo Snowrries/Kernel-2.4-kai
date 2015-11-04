@@ -1188,16 +1188,16 @@ asmlinkage long sys_sched_rr_get_interval(pid_t pid, struct timespec *interval)
 	p = find_process_by_pid(pid);
 	if (p)
 	{
-		double tempo = 10000+ 1800300log10((double)(p->priority));
-		//p->priority yet to be implemented.
-		t->tv_nsec = (long) tempo;
-		t->tv_sec = 0;
+		jiffies_to_timespec(thyme[p->priority],
+				    &t);
 	}
 	read_unlock(&tasklist_lock);
 	if (p)
 		retval = copy_to_user(interval, &t, sizeof(t)) ? -EFAULT : 0;
 out_nounlock:
 	return retval;
+
+
 }
 
 static void show_task(struct task_struct * p)
