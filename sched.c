@@ -263,15 +263,16 @@ static inline void add_to_runqueue(struct task_struct * p)
 	falur = 1;
 	//list_add_tail(&p->run_list, &runqueue_head);
 	if(!empty[0]){
-		__list_add(&p->run_list, &runqueue_head, &runqueue_head->next);
+		__list_add(&p.run_list, &runqueue_head, &runqueue_head->next);
 		empty[0] = 1;
 		p->priority = 0;
 	}
 	//Find the next queue that isn't empty in order to link
 	else{
-		for(int i = 1; i < 255; i++){
+		int i;
+		for(i = 1; i < 255; i++){
 			if(empty[i]){
-				__list_add(&p->run_list, &priority_queues[i]->prev, &priority_queues[i]);
+				__list_add(&p.run_list, &priority_queues[i]->prev, &priority_queues[i]);
 				falur = 0;
 				p->priority = i;
 				break;
@@ -295,7 +296,8 @@ static inline void move_last_runqueue(struct task_struct * p)
 	//we want to add before the head of the next non empty queue; queues are linked
 	//add_tail to the head of the next queue adds the node to the tail of the current.
 	//Keeps priority constant.
-	for(int i = p->priority; i < 255; i++){
+	int i;
+	for(i = p.priority; i < 255; i++){
 		if(empty[i]){
 				__list_add(&p->run_list, &priority_queues[i]->prev, &priority_queues[i]);
 				falur = 0;
@@ -332,8 +334,8 @@ static inline int try_to_wake_up(struct task_struct * p, int synchronous)
 		add_to_runqueue(p);
 	}
 	else{
-		if(priority_queues[--(p->priority)] == null){
-			priority_queues[p->priority] = p;
+		if(priority_queues[--(p->priority)] == NULL){
+			priority_queues[p->priority] = &p.run_list;
 		}
 		list_add_tail(&p->run_list, &priority_queues[--(p->priority)]); 
 		//this puts it at the end of the queue above p's queue. Priority adjusted accordingly.
@@ -563,14 +565,15 @@ need_resched_back:
 				//shift the prev and nexts such that p is now at the end of the next queue
 				//Make sure to update empty[] and priority_queues[] as necessary.
 				//Note current = prev
-				priority_queues[prev->priority] = &prev->run_list;
+				priority_queues[prev->priority] = &prev.run_list;
 				empty[prev->priority] = 1;
 			}
 			else{
-				(&(prev->runlist)->prev)->next = (&(prev->runlist))->next;
-				(&(prev->runlist)->next)->prev = (&(prev->runlist))->prev;
+				(&(prev->runlist)->prev)->next = (&(prev.runlist))->next;
+				(&(prev->runlist)->next)->prev = (&(prev.runlist))->prev;
 				falur = 1;
-				for(int i = prev->priority; i < 255; i++){
+				int i;
+				for(i = prev->priority; i < 255; i++){
 					if(empty[i]){
 						__list_add(&prev->run_list, &priority_queues[i]->prev, &priority_queues[i]);
 						falur = 0;
