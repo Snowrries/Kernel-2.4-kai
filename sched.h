@@ -286,7 +286,6 @@ int empty[256];
 
 int falur;
 
-static long thyme[256] = {};
 //Fill in vals
 
 struct task_struct {
