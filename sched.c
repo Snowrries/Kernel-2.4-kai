@@ -263,7 +263,7 @@ static inline void add_to_runqueue(struct task_struct * p)
 	falur = 1;
 	//list_add_tail(&p->run_list, &runqueue_head);
 	if(!empty[0]){
-		__list_add(&p->run_list, &runqueue_head, &runqueue_head->next);
+		__list_add(&p->run_list, &runqueue_head, &runqueue_head.next);
 		empty[0] = 1;
 		p->priority = 0;
 	}
