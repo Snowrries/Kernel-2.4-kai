@@ -272,7 +272,7 @@ static inline void add_to_runqueue(struct task_struct * p)
 		int i;
 		for(i = 1; i < 255; i++){
 			if(empty[i]){
-				__list_add(&p->run_list, &priority_queues[i]->prev, &priority_queues[i]);
+				__list_add(&p->run_list, priority_queues[i].prev, &priority_queues[i]);
 				falur = 0;
 				p->priority = i;
 				break;
@@ -299,7 +299,7 @@ static inline void move_last_runqueue(struct task_struct * p)
 	int i;
 	for(i = p->priority; i < 255; i++){
 		if(empty[i]){
-				__list_add(&p->run_list, &priority_queues[i]->prev, &priority_queues[i]);
+				__list_add(&p->run_list, priority_queues[i].prev, &priority_queues[i]);
 				falur = 0;
 				p->priority = i;
 				break;
