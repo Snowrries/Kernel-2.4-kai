@@ -528,9 +528,8 @@ asmlinkage void schedule_tail(struct task_struct *prev)
 asmlinkage void schedule(void)
 {
 	struct schedule_data * sched_data;
-	struct task_struct *prev, *next, *p;
-	struct list_head *tmp;
-	int this_cpu, c;
+	struct task_struct *prev, *next;
+	int this_cpu;
 
 
 	spin_lock_prefetch(&runqueue_lock);
@@ -565,12 +564,12 @@ need_resched_back:
 				//shift the prev and nexts such that p is now at the end of the next queue
 				//Make sure to update empty[] and priority_queues[] as necessary.
 				//Note current = prev
-				priority_queues[prev->priority] = &prev.run_list;
+				priority_queues[prev->priority] = &prev->run_list;
 				empty[prev->priority] = 1;
 			}
 			else{
-				(&(prev->runlist)->prev)->next = (&(prev.runlist))->next;
-				(&(prev->runlist)->next)->prev = (&(prev.runlist))->prev;
+				(&(prev->runlist)->prev)->next = (&(prev->runlist))->next;
+				(&(prev->runlist)->next)->prev = (&(prev->runlist))->prev;
 				falur = 1;
 				int i;
 				for(i = prev->priority; i < 255; i++){
@@ -1080,7 +1079,7 @@ asmlinkage long sys_sched_yield(void)
 	 * to be atomic.) In threaded applications this optimization
 	 * gets triggered quite often.
 	 */
-
+	struct task_struct *p;
 	int nr_pending = nr_running;
 
 #if CONFIG_SMP
