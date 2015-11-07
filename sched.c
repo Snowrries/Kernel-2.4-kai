@@ -564,12 +564,12 @@ need_resched_back:
 				//shift the prev and nexts such that p is now at the end of the next queue
 				//Make sure to update empty[] and priority_queues[] as necessary.
 				//Note current = prev
-				priority_queues[prev->priority] = &prev->run_list;
+				priority_queues[prev->priority] = prev->run_list;
 				empty[prev->priority] = 1;
 			}
 			else{
-				(&(prev->runlist)->prev)->next = (&(prev->runlist))->next;
-				(&(prev->runlist)->next)->prev = (&(prev->runlist))->prev;
+				((prev->runlist)->prev)->next = ((prev->runlist))->next;
+				((prev->runlist)->next)->prev = ((prev->runlist))->prev;
 				falur = 1;
 				int i;
 				for(i = prev->priority; i < 255; i++){
