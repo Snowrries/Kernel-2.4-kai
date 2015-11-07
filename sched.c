@@ -568,13 +568,13 @@ need_resched_back:
 				empty[prev->priority] = 1;
 			}
 			else{
-				((prev->runlist)->prev)->next = ((prev->runlist))->next;
-				((prev->runlist)->next)->prev = ((prev->runlist))->prev;
+				((prev->run_list)->prev)->next = ((prev->run_list))->next;
+				((prev->run_list)->next)->prev = ((prev->run_list))->prev;
 				falur = 1;
 				int i;
 				for(i = prev->priority; i < 255; i++){
 					if(empty[i]){
-						__list_add(prev->run_list, priority_queues[i].prev, &priority_queues[i]);
+						__list_add(&prev->run_list, priority_queues[i].prev, &priority_queues[i]);
 						falur = 0;
 						prev->priority = i;
 					}
@@ -603,7 +603,7 @@ need_resched_back:
 	 * this is the scheduler proper:
 	 */
 
-repeat_schedule:
+//repeat_schedule:
 	/*
 	 * Default process to select..
 	 */
