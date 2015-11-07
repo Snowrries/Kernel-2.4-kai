@@ -568,8 +568,8 @@ need_resched_back:
 				empty[prev->priority] = 1;
 			}
 			else{
-				((prev->run_list).prev).next = ((prev->run_list)).next;
-				((prev->run_list)->next)->prev = ((prev->run_list))->prev;
+				((prev->run_list).prev)->next = ((prev->run_list)).next;
+				((prev->run_list).next)->prev = ((prev->run_list)).prev;
 				falur = 1;
 				int i;
 				for(i = prev->priority; i < 255; i++){
