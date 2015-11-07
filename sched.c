@@ -1081,6 +1081,8 @@ asmlinkage long sys_sched_yield(void)
 	 */
 	struct task_struct *p;
 	int nr_pending = nr_running;
+	struct wait_queue_head_t *q;
+	q->task = current;
 
 #if CONFIG_SMP
 	int i;
@@ -1104,14 +1106,19 @@ asmlinkage long sys_sched_yield(void)
 			current->policy |= SCHED_YIELD;
 			//|= is bitwise inclusive OR assignment
 		current->need_resched = 1;
-
+/*
 		spin_lock_irq(&runqueue_lock);
-		interruptible_sleep_on(p);
 		move_last_runqueue(p);
-		
 		//We want to put it in a wait queue then schedule it back into the queue it left off in after it's ready.
 		//What's a wait queue?
 		spin_unlock_irq(&runqueue_lock);
+*/
+		/*Implement global wait queue and add this process to a wait queue?
+		We need to pass the interruptible_sleep_on function a wait_queue_head_t so we need to have one ready.
+		then after that, the init for the interruptible_sleep_on uses current to initialize the wait queue, so all we need is
+		to remove it from run queue? Then make sure scheduler grabs things from the wait queue... which it should, yeah?*/
+		del_from_runqueue(current);
+		
 	}
 	return 0;
 }
