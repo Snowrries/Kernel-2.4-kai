@@ -574,7 +574,7 @@ need_resched_back:
 				int i;
 				for(i = prev->priority; i < 255; i++){
 					if(empty[i]){
-						__list_add(&prev->run_list, priority_queues[i].prev, &priority_queues[i]);
+						__list_add(prev->run_list, priority_queues[i].prev, &priority_queues[i]);
 						falur = 0;
 						prev->priority = i;
 					}
