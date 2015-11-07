@@ -335,7 +335,7 @@ static inline int try_to_wake_up(struct task_struct * p, int synchronous)
 	}
 	else{
 		if(priority_queues[--(p->priority)] == 0){
-			priority_queues[p->priority] = &p.run_list;
+			priority_queues[p->priority] = &p->run_list;
 		}
 		list_add_tail(&p->run_list, &priority_queues[--(p->priority)]); 
 		//this puts it at the end of the queue above p's queue. Priority adjusted accordingly.
