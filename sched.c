@@ -1418,7 +1418,9 @@ void __init sched_init(void)
 	init_bh(TIMER_BH, timer_bh);
 	init_bh(TQUEUE_BH, tqueue_bh);
 	init_bh(IMMEDIATE_BH, immediate_bh);
-
+	priority_queues = vmalloc(256); //256
+	/*if queue is empty then that slot in empty[] is 0, otherwise 1 */
+	empty = vmalloc(256);//256
 	/*
 	 * The boot idle thread does lazy MMU switching as well:
 	 */
