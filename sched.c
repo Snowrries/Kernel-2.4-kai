@@ -1115,7 +1115,7 @@ asmlinkage long sys_sched_yield(void)
 		spin_lock_irq(&runqueue_lock);
 		//move_last_runqueue(p);
 		
-		interruptible_sleep_on(cutie);
+		interruptible_sleep_on(&cutie);
 		//We want to put it in a wait queue then schedule it back into the queue it left off in after it's ready.
 		//What's a wait queue?
 		spin_unlock_irq(&runqueue_lock);
