@@ -44,9 +44,9 @@ extern void immediate_bh(void);
 static DECLARE_WAIT_QUEUE_HEAD(cutie);
 unsigned securebits = SECUREBITS_DEFAULT; /* systemwide security settings */
 
-struct list_head *priority_queues[256] = vmalloc(256);
+struct list_head *priority_queues[256];
 /*if queue is empty then that slot in empty[] is 0, otherwise 1 */
-int empty[256] = vmalloc(256);
+int empty[256];
 int falur;
 
 extern void mem_use(void);
