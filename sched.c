@@ -334,7 +334,7 @@ static inline int try_to_wake_up(struct task_struct * p, int synchronous)
 		add_to_runqueue(p);
 	}
 	else{
-		if(priority_queues[--(p->priority)] == 0){
+		if(empty[--(p->priority)] == 0){
 			priority_queues[p->priority] = p->run_list;
 		}
 		list_add_tail(&p->run_list, &priority_queues[--(p->priority)]); 
