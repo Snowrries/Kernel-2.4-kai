@@ -44,6 +44,11 @@ extern void immediate_bh(void);
 static DECLARE_WAIT_QUEUE_HEAD(cutie);
 unsigned securebits = SECUREBITS_DEFAULT; /* systemwide security settings */
 
+struct list_head *priority_queues[256] = vmalloc(256);
+/*if queue is empty then that slot in empty[] is 0, otherwise 1 */
+int empty[256] = vmalloc(256);
+int falur;
+
 extern void mem_use(void);
 
 /*
@@ -1418,9 +1423,7 @@ void __init sched_init(void)
 	init_bh(TIMER_BH, timer_bh);
 	init_bh(TQUEUE_BH, tqueue_bh);
 	init_bh(IMMEDIATE_BH, immediate_bh);
-	priority_queues = vmalloc(256); //256
-	/*if queue is empty then that slot in empty[] is 0, otherwise 1 */
-	empty = vmalloc(256);//256
+
 	/*
 	 * The boot idle thread does lazy MMU switching as well:
 	 */
