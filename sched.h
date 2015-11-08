@@ -13,6 +13,7 @@ extern unsigned long event;
 #include <linux/times.h>
 #include <linux/timex.h>
 #include <linux/rbtree.h>
+#include <linux/vmalloc.h>
 
 #include <asm/system.h>
 #include <asm/semaphore.h>
@@ -280,11 +281,11 @@ struct user_struct {
 extern struct user_struct root_user;
 #define INIT_USER (&root_user)
 
-struct list_head *priority_queues[256];
+struct list_head *priority_queues[256]; //256
 /*if queue is empty then that slot in empty[] is 0, otherwise 1 */
-int empty[256];
+int empty[256];//256
 
-extern int falur;
+int falur;
 
 //Fill in vals
 
