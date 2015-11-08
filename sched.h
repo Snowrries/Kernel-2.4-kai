@@ -284,7 +284,7 @@ struct list_head *priority_queues[256];
 /*if queue is empty then that slot in empty[] is 0, otherwise 1 */
 int empty[256];
 
-int falur;
+extern int falur;
 
 //Fill in vals
 
