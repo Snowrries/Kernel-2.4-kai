@@ -19,6 +19,7 @@
  * current-task
  */
 
+#include <linux/wait.h>
 #include <linux/config.h>
 #include <linux/mm.h>
 #include <linux/init.h>
