@@ -1083,7 +1083,7 @@ asmlinkage long sys_sched_yield(void)
 	 * to be atomic.) In threaded applications this optimization
 	 * gets triggered quite often.
 	 */
-	struct task_struct *p;
+//	struct task_struct *p;
 	//wait_queue_head_t *q;
 	int nr_pending = nr_running;
 	//q->task_list = (&current)->runlist;
