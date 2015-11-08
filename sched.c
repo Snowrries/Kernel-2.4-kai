@@ -266,6 +266,7 @@ static inline void add_to_runqueue(struct task_struct * p)
 		__list_add(&p->run_list, &runqueue_head, runqueue_head.next);
 		empty[0] = 1;
 		p->priority = 0;
+		schedule();
 	}
 	//Find the next queue that isn't empty in order to link
 	else{
