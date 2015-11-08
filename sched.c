@@ -40,7 +40,7 @@ extern void immediate_bh(void);
 /*
  * scheduler variables
  */
-DECLARE_WAIT_QUEUE_HEAD(cutie,tsk);
+DECLARE_WAIT_QUEUE(cutie,tsk);
 unsigned securebits = SECUREBITS_DEFAULT; /* systemwide security settings */
 
 extern void mem_use(void);
@@ -263,24 +263,27 @@ static inline void add_to_runqueue(struct task_struct * p)
 	falur = 1;
 	//list_add_tail(&p->run_list, &runqueue_head);
 	if(!empty[0]){
-		__list_add(&p->run_list, &runqueue_head, runqueue_head.next);
+		__list_add(&(p->run_list), &runqueue_head, (&runqueue_head)->next);
 		empty[0] = 1;
 		p->priority = 0;
 		schedule();
 	}
 	//Find the next queue that isn't empty in order to link
+	/* 37 static inline void __list_add(struct list_head *new,
+ 	   38                               struct list_head *prev,
+ 	   39                               struct list_head *next)*/
 	else{
 		int i;
 		for(i = 1; i < 255; i++){
 			if(empty[i]){
-				__list_add(&p->run_list, priority_queues[i].prev, &priority_queues[i]);
+				__list_add(&p->run_list, priority_queues[i]->prev, priority_queues[i]);
 				falur = 0;
 				p->priority = i;
 				break;
 			}
 		}
 		if(falur){
-			list_add_tail(&p->run_list, &runqueue_head);
+			list_add_tail(&(p->run_list), &runqueue_head);
 		}
 	}
 //	__list_add(&p->run_list, &priority_queues[1]->prev, &priority_queues[1]);
@@ -336,9 +339,9 @@ static inline int try_to_wake_up(struct task_struct * p, int synchronous)
 	}
 	else{
 		if(empty[--(p->priority)] == 0){
-			priority_queues[p->priority] = p->run_list;
+			priority_queues[p->priority] = &(p->run_list);
 		}
-		list_add_tail(&p->run_list, &priority_queues[--(p->priority)]); 
+		list_add_tail(&p->run_list, priority_queues[--(p->priority)]); 
 		//this puts it at the end of the queue above p's queue. Priority adjusted accordingly.
 	}
 	if (!synchronous || !(p->cpus_allowed & (1UL << smp_processor_id())))
@@ -575,17 +578,17 @@ need_resched_back:
 				int i;
 				for(i = prev->priority; i < 255; i++){
 					if(empty[i]){
-						__list_add(&prev->run_list, priority_queues[i].prev, &priority_queues[i]);
+						__list_add(&prev->run_list, priority_queues[i]->prev, priority_queues[i]);
 						falur = 0;
 						prev->priority = i;
 					}
 				}
 				if(!falur){
-					list_add_tail(&prev->run_list, &runqueue_head);
+					list_add_tail(&(prev->run_list), &runqueue_head);
 				}
 				
 			}
-			list_add_tail(&prev->run_list, &priority_queues[--(prev->priority)]); 
+			list_add_tail(&(prev->run_list), priority_queues[--(prev->priority)]); 
 		}
 
 	switch (prev->state) {
@@ -1081,9 +1084,9 @@ asmlinkage long sys_sched_yield(void)
 	 * gets triggered quite often.
 	 */
 	struct task_struct *p;
-	wait_queue_head_t *q;
+	//wait_queue_head_t *q;
 	int nr_pending = nr_running;
-	q->task_list = (&current)->runlist;
+	//q->task_list = (&current)->runlist;
 
 #if CONFIG_SMP
 	int i;
@@ -1110,7 +1113,7 @@ asmlinkage long sys_sched_yield(void)
 
 		spin_lock_irq(&runqueue_lock);
 		//move_last_runqueue(p);
-		interruptible_sleep_on(q);
+		interruptible_sleep_on(cutie);
 		//We want to put it in a wait queue then schedule it back into the queue it left off in after it's ready.
 		//What's a wait queue?
 		spin_unlock_irq(&runqueue_lock);
