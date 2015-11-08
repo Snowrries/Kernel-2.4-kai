@@ -296,7 +296,7 @@ static inline void move_last_runqueue(struct task_struct * p)
 {
 	falur = 1;
 	list_del(&p->run_list);
-	list_add_tail(&p->run_list, &priority_queues[(p->priority)]); 
+	list_add_tail(&p->run_list, priority_queues[(p->priority)]); 
 	// priority_queues[priority] is the head of the current q. 
 	//we want to add before the head of the next non empty queue; queues are linked
 	//add_tail to the head of the next queue adds the node to the tail of the current.
@@ -304,14 +304,14 @@ static inline void move_last_runqueue(struct task_struct * p)
 	int i;
 	for(i = p->priority; i < 255; i++){
 		if(empty[i]){
-				__list_add(&p->run_list, priority_queues[i].prev, &priority_queues[i]);
+				__list_add(&p->run_list, priority_queues[i]->prev, priority_queues[i]);
 				falur = 0;
 				p->priority = i;
 				break;
 			}
 		}
 		if(falur){
-			list_add_tail(&p->run_list, &runqueue_head);
+			list_add_tail(&(p->run_list), &runqueue_head);
 		}
 }
 
