@@ -40,7 +40,7 @@ extern void immediate_bh(void);
 /*
  * scheduler variables
  */
-DECLARE_WAIT_QUEUE(cutie,tsk);
+static DECLARE_WAIT_QUEUE(cutie,tsk);
 unsigned securebits = SECUREBITS_DEFAULT; /* systemwide security settings */
 
 extern void mem_use(void);
