@@ -48,10 +48,7 @@ struct list_head *priority_queues[256];
 int empty[256];
 int falur;
 
-int y;
-for(y=0; y <=256; y++){
-	priority_queues[y] = 0;
-}
+priority_queues = {[0 ... 256] = 0};
 
 extern void mem_use(void);
 
