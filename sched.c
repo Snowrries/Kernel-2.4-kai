@@ -51,7 +51,6 @@ int falur;
 int y;
 for(y=0; y <=256; y++){
 	priority_queues[y] = 0;
-	empty[y]=0;
 }
 
 extern void mem_use(void);
