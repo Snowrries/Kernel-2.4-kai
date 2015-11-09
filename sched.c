@@ -221,7 +221,7 @@ send_now_idle:
 			}
 		} else {
 			if (oldest_idle == (cycles_t)-1) {
-				int prio = preemption_goodness(tsk, p, cpu);
+				int prio = 0;
 				//No longer using priorities. What are we checking here? 
 				//Is reschedule idle meant to solve some starvation issue?
 
