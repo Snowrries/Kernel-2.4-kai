@@ -18,6 +18,8 @@
  * call functions (type getpid()), which just extract a field from
  * current-task
  */
+ 
+// https://github.com/Snowrries/Kernel-2.4-kai
 
 #include <linux/wait.h>
 #include <linux/config.h>
@@ -44,8 +46,12 @@ extern void immediate_bh(void);
 static DECLARE_WAIT_QUEUE_HEAD(cutie);
 unsigned securebits = SECUREBITS_DEFAULT; /* systemwide security settings */
 
+//Creates an array of listheads to keep track of each queue in the MLFQ
 struct list_head *priority_queues[256];
+//Creates an array to check whether the list head points to an empty queue
+//If 0, then the queue pointed to is empty, if 1 then the queue is not empty
 int empty[256];
+//If the queue is empty, then the falur is set to 1, otherwise it stays 0
 int falur;
 
 extern void mem_use(void);
@@ -62,6 +68,7 @@ extern void mem_use(void);
  * calculation depends on the value of HZ.
  */
 
+//used for logarithmic time quanta for easy of calculations
 static long thyme [256] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,50,51,51,52,52,53,53,54,54,55,55,56,56,57,57,58,58,59,59,60,60,61,61,62,62,63,63,64,64,65,65,66,67,67,68,68,69,69,70,70,71,71,72,72,73,73,74,74,75,75,76,76,76,76,76,77,77,77,77,77,78,78,78,78,78,79,79,79,79,79,80,80,80,80,80,81,81,81,81,81,81,82,82,82,82,82,82,83,83,83,83,83,83,84,84,84,84,84,84,85,85,85,85,85,85,86,86,86,86,86,86,87,87,87,87,87,87,88,88,88,88,88,88,89,89,89,89,89,89,90,90,90,90,90,90,90,91,91,91,91,91,91,91,92,92,92,92,92,92,92,93,93,93,93,93,93,93,94,94,94,94,94,94,94,95,95,95,95,95,95,95,96,96,96,96,96,96,96,97,97,97,97,97,97,97,98,98,98,98,98,98,98,99,99,99,99,99,99,99,100,100,100,100,100,100,100};
 //Haha... well, this is a hardcoded array.
 /*
