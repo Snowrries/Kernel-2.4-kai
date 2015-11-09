@@ -45,9 +45,14 @@ static DECLARE_WAIT_QUEUE_HEAD(cutie);
 unsigned securebits = SECUREBITS_DEFAULT; /* systemwide security settings */
 
 struct list_head *priority_queues[256];
-/*if queue is empty then that slot in empty[] is 0, otherwise 1 */
 int empty[256];
 int falur;
+
+int y;
+for(y=0; y <=256; y++){
+	priority_queues[y] = 0;
+	empty[y]=0;
+}
 
 extern void mem_use(void);
 
