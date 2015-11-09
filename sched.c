@@ -48,7 +48,7 @@ struct list_head *priority_queues[256];
 int empty[256];
 int falur;
 
-*priority_queues = {[0 ... 256] = 0};
+*priority_queues = {[0 ... 256] = NULL};
 
 extern void mem_use(void);
 
